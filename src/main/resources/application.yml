@@ -1,0 +1,16 @@
+# For standard Spring Boot parameters see:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+server:
+  port: 8080
+  servlet:
+    context-path: /locking
+     
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:49156:ORCLCDB
+    username: fred
+    password: flintstone
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:    database-platform: org.hibernate.dialect.Oracle12cDialect
+    hibernate:      ddl-auto: none
+      use-new-id-generator-mappings: false
