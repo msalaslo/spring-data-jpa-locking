@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -23,15 +24,15 @@ import lombok.NoArgsConstructor;
  * @author Miguel
  *
  */
-public class Customer {
+public class CustomerOptimistic {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer-sequence-generator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer-optimistic-sequence-generator")
     @GenericGenerator(
-    	      name = "customer-sequence-generator",
+    	      name = "customer-optimistic-sequence-generator",
     	      strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
     	      parameters = {
-    	        @Parameter(name = "sequence_name", value = "CUSTOMER_SEQ"),
+    	        @Parameter(name = "sequence_name", value = "CUSTOMER_OPTIMISTIC_SEQ"),
     	        @Parameter(name = "initial_value", value = "1"),
     	        @Parameter(name = "increment_size", value = "1")
     	        }
@@ -40,5 +41,9 @@ public class Customer {
 
 	public String firstName;
 	public String lastName;
+	
+
+	@Version
+	Long version;
 	
 }

@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.msalaslo.locking.api.converter.CustomerConverter;
-import com.github.msalaslo.locking.api.converter.CustomerNoIdConverter;
+import com.github.msalaslo.locking.api.converter.CustomerPessimisticConverter;
+import com.github.msalaslo.locking.api.converter.CustomerPessimisticNoIdConverter;
 import com.github.msalaslo.locking.api.dto.CustomerDTO;
 import com.github.msalaslo.locking.api.dto.CustomerNoIdDTO;
-import com.github.msalaslo.locking.domain.entity.Customer;
-import com.github.msalaslo.locking.service.CustomerService;
+import com.github.msalaslo.locking.domain.entity.CustomerPessimistic;
+import com.github.msalaslo.locking.service.CustomerServicePessimistic;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -42,18 +42,18 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("no-locking/customers")
+@RequestMapping("pessimistic/customers")
 @Tag(name = "Customer controller")
-public class CustomerController {
+public class CustomerControllerPessimistic {
 
     @Autowired
-    private CustomerConverter customerConverter;
+    private CustomerPessimisticConverter customerConverter;
     
     @Autowired
-    private CustomerNoIdConverter customerNoIdConverter;
+    private CustomerPessimisticNoIdConverter customerNoIdConverter;
     
     @Autowired
-    private CustomerService customerService;
+    private CustomerServicePessimistic customerService;
 
     @GetMapping(produces = "application/json")
     @ResponseBody
@@ -79,7 +79,7 @@ public class CustomerController {
     )
     public CustomerDTO createCustomer(@Valid @RequestBody CustomerNoIdDTO request) {
         LOGGER.debug("Creating an customer: {}", request.toString());
-        Customer customer = customerService.createCustomer(customerNoIdConverter.toCustomer(request));
+        CustomerPessimistic customer = customerService.createCustomer(customerNoIdConverter.toCustomer(request));
         return customerConverter.toCustomerDto(customer);
     }
     
@@ -102,11 +102,39 @@ public class CustomerController {
     )
     public CustomerDTO modifyCustomer(@PathVariable @Valid long id, @Valid @RequestBody CustomerNoIdDTO customerDto) {
         LOGGER.debug("Modifying an customer: {}", customerDto);    
-        Customer customer = customerNoIdConverter.toCustomer(customerDto);
+        CustomerPessimistic customer = customerNoIdConverter.toCustomer(customerDto);
         customer = customerService.findAndModifyCustomer(id, customer);
         return customerConverter.toCustomerDto(customer);
     }
-
+    
+    
+    @PutMapping(path = "/read-locking/{id}", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            description = "Modify a customer using Pessimistic Locking"
+    )
+    public CustomerDTO modifyCustomerWithPessimisticReadLocking(@PathVariable @Valid long id, @Valid @RequestBody CustomerNoIdDTO customerDto) {
+        LOGGER.debug("modifyCustomerWithPessimisticLocking: {}", customerDto);   
+        CustomerPessimistic customer = customerNoIdConverter.toCustomer(customerDto);
+        customer = customerService.findAndModifyCustomerWithPessimisticReadLocking(id, customer);
+        return customerConverter.toCustomerDto(customer);
+    }
+    
+    @PutMapping(path = "/write-locking/{id}", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            description = "Modify a customer using Pessimistic Locking"
+    )
+    public CustomerDTO modifyCustomerWithPessimisticWriteLocking(@PathVariable @Valid long id, @Valid @RequestBody CustomerNoIdDTO customerDto) {
+        LOGGER.debug("modifyCustomerWithPessimisticLocking: {}", customerDto);   
+        CustomerPessimistic customer = customerNoIdConverter.toCustomer(customerDto);
+        customer = customerService.findAndModifyCustomerWithPessimisticWriteLocking(id, customer);
+        return customerConverter.toCustomerDto(customer);
+    }
+    
+    
     @GetMapping(path = "/all-ids", produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)

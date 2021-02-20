@@ -3,7 +3,7 @@ package com.github.msalaslo.locking.service;
 
 import java.util.List;
 
-import com.github.msalaslo.locking.domain.entity.Customer;
+import com.github.msalaslo.locking.domain.entity.CustomerOptimistic;
 
 /**
  * Sample service interface used as template. <b>Please remove for actual project implementation.</b>
@@ -11,14 +11,14 @@ import com.github.msalaslo.locking.domain.entity.Customer;
  * @since 1.0.0
  * 
  */
-public interface CustomerService {
+public interface CustomerServiceOptimistic {
 
 	/**
 	 * Creates a customer.
 	 * 
 	 * @param customer The customer to create.
 	 */
-    Customer createCustomer(Customer customer);
+    CustomerOptimistic createCustomer(CustomerOptimistic customer);
     
 	/**
 	 * Delete a customer.
@@ -32,14 +32,21 @@ public interface CustomerService {
 	 * 
 	 * @param name The customer to modify.
 	 */
-    Customer findAndModifyCustomer(long id, Customer customer);
+    CustomerOptimistic findAndModifyCustomer(long id, CustomerOptimistic customer);
+    
+	/**
+	 * Find by id and modifies data of a customer.
+	 * 
+	 * @param name The customer to modify.
+	 */
+    CustomerOptimistic findAndModifyCustomerWithOptimisticLocking(long id, CustomerOptimistic customer);
     
 	/**
 	 * Gets all the customers.
 	 * 
 	 * @return The list of customers.
 	 */
-    List<Customer> getCustomers();
+    List<CustomerOptimistic> getCustomers();
 
     /**
      * Gets all IDs

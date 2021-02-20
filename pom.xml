@@ -10,7 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.github.msalaslo</groupId>
-	<artifactId>spring-data-jdbc-locking</artifactId>
+	<artifactId>spring-data-jpa-locking</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-data-jpa-lock</name>
 	<description>Spring Data Locking </description>

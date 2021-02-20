@@ -23,8 +23,24 @@ public class OpenAPIConfiguration {
     @Bean
     public GroupedOpenApi v10Api() {
         return GroupedOpenApi.builder()
-        		.group("v1.0")
-        		.addOpenApiCustomiser(new VersionedApi(contextPath, "/v1.0"))        	
+        		.group("no-locking")
+        		.addOpenApiCustomiser(new VersionedApi(contextPath, "/no-locking"))        	
+                .build();
+    }
+    
+    @Bean
+    public GroupedOpenApi v10OptimisticApi() {
+        return GroupedOpenApi.builder()
+        		.group("optimistic")
+        		.addOpenApiCustomiser(new VersionedApi(contextPath, "/optimistic"))        	
+                .build();
+    }
+    
+    @Bean
+    public GroupedOpenApi v10PessimisticApi() {
+        return GroupedOpenApi.builder()
+        		.group("pessimistic")
+        		.addOpenApiCustomiser(new VersionedApi(contextPath, "/pessimistic"))        	
                 .build();
     }
     

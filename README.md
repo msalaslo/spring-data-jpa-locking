@@ -2,9 +2,8 @@
 
 ## About
 
-Spring Data JPA Example for test OptimisticLocking and PessimisticLocking by using
-Annotations. 
-Tested with Database Oracle 12
+Spring Data JPA Example for test OptimisticLocking and PessimisticLocking by using Annotations. 
+Tested with Oracle 12 Database
 
 ## Technical Stack:
 
@@ -29,5 +28,8 @@ Test on the browser via SWAGGER
 -------------------
 
 ```sh
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/locking/swagger-ui.html
 ```
+Performance tests comparison between No locking, Optimistic locking, Pessimistic Read and Pessimistic Write "FIND AND UPDATES"
+![GitHub Logo](/images/spring-jpa-locking-performance-tests.jpg)
+Format: ![Alt Text](url)

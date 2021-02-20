@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.msalaslo.locking.api.converter.CustomerConverter;
-import com.github.msalaslo.locking.api.converter.CustomerNoIdConverter;
+import com.github.msalaslo.locking.api.converter.CustomerOptimisticConverter;
+import com.github.msalaslo.locking.api.converter.CustomerOptimisticNoIdConverter;
 import com.github.msalaslo.locking.api.dto.CustomerDTO;
 import com.github.msalaslo.locking.api.dto.CustomerNoIdDTO;
-import com.github.msalaslo.locking.domain.entity.Customer;
-import com.github.msalaslo.locking.service.CustomerService;
+import com.github.msalaslo.locking.domain.entity.CustomerOptimistic;
+import com.github.msalaslo.locking.service.CustomerServiceOptimistic;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -42,18 +42,18 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("no-locking/customers")
+@RequestMapping("optimistic/customers")
 @Tag(name = "Customer controller")
-public class CustomerController {
+public class CustomerControllerOptimistic {
 
     @Autowired
-    private CustomerConverter customerConverter;
+    private CustomerOptimisticConverter customerConverter;
     
     @Autowired
-    private CustomerNoIdConverter customerNoIdConverter;
+    private CustomerOptimisticNoIdConverter customerNoIdConverter;
     
     @Autowired
-    private CustomerService customerService;
+    private CustomerServiceOptimistic customerService;
 
     @GetMapping(produces = "application/json")
     @ResponseBody
@@ -79,7 +79,7 @@ public class CustomerController {
     )
     public CustomerDTO createCustomer(@Valid @RequestBody CustomerNoIdDTO request) {
         LOGGER.debug("Creating an customer: {}", request.toString());
-        Customer customer = customerService.createCustomer(customerNoIdConverter.toCustomer(request));
+        CustomerOptimistic customer = customerService.createCustomer(customerNoIdConverter.toCustomer(request));
         return customerConverter.toCustomerDto(customer);
     }
     
@@ -102,11 +102,24 @@ public class CustomerController {
     )
     public CustomerDTO modifyCustomer(@PathVariable @Valid long id, @Valid @RequestBody CustomerNoIdDTO customerDto) {
         LOGGER.debug("Modifying an customer: {}", customerDto);    
-        Customer customer = customerNoIdConverter.toCustomer(customerDto);
+        CustomerOptimistic customer = customerNoIdConverter.toCustomer(customerDto);
         customer = customerService.findAndModifyCustomer(id, customer);
         return customerConverter.toCustomerDto(customer);
     }
-
+    
+    @PutMapping(path = "/locking/{id}", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            description = "Modify a customer using Optimistic Locking"
+    )
+    public CustomerDTO modifyCustomerWithOptimisticLocking(@PathVariable @Valid long id, @Valid @RequestBody CustomerNoIdDTO customerDto) {
+        LOGGER.debug("modifyCustomerWithOptimisticLocking: {}", customerDto);   
+        CustomerOptimistic customer = customerNoIdConverter.toCustomer(customerDto);
+        customer = customerService.findAndModifyCustomerWithOptimisticLocking(id, customer);
+        return customerConverter.toCustomerDto(customer);
+    }
+    
     @GetMapping(path = "/all-ids", produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
@@ -117,5 +130,6 @@ public class CustomerController {
         LOGGER.debug("Get all ids: {}");
         return customerService.findAllIds();
     }
+    
 
 }
